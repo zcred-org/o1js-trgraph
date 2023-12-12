@@ -1,6 +1,6 @@
 {
   "name": "o1js-trgraph",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "o1js transformation graph",
   "license": "(Apache-2.0 AND MIT)",
   "repository": {
@@ -24,7 +24,7 @@
     "./dist"
   ],
   "dependencies": {
-    "trgraph": "^1.0.0",
+    "trgraph": "^1.0.1",
     "o1js": "^0.14.2"
   },
   "devDependencies": {
