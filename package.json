@@ -1,6 +1,6 @@
 {
   "name": "o1js-trgraph",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "o1js transformation graph",
   "license": "(Apache-2.0 AND MIT)",
   "repository": {
@@ -18,7 +18,7 @@
     "test": "npx tsm ./node_modules/uvu/bin.js ./test",
     "scripts": "npx tsm ./scripts/create-link-types.ts",
     "build": "rm -r dist & npm run scripts && tsc -p tsconfig.build.json",
-    "publish": "npm run build && npm publish"
+    "publish-repo": "npm run build && npm publish"
   },
   "files": [
     "./dist"
