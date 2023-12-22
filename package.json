@@ -24,7 +24,7 @@
     "./dist"
   ],
   "dependencies": {
-    "trgraph": "^1.0.1",
+    "trgraph": "^1.0.2",
     "o1js": "0.15.0"
   },
   "devDependencies": {
