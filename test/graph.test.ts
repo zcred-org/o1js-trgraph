@@ -2,6 +2,7 @@ import { suite } from "uvu";
 import { Bool, CircuitString, Field, PrivateKey, PublicKey, Signature, UInt64 } from "o1js";
 import { O1TrGraph } from "../src/graph.js";
 import * as a from "uvu/assert";
+import * as o1js from "o1js";
 
 const test = suite("Transformation graph tests");
 
@@ -15,7 +16,7 @@ const UINTS = [
 ];
 
 test("uints to field & field to uints", () => {
-  const tg = new O1TrGraph();
+  const tg = new O1TrGraph(o1js);
   for (const uint of UINTS) {
     const field = tg.transform<Field>(1, [`${uint}-mina:field`]);
     a.is(field.toBigInt(), 1n);
@@ -31,7 +32,7 @@ test("uints to field & field to uints", () => {
 });
 
 test("uints to mina:uint64 & mina:uint64 to uints", () => {
-  const tg = new O1TrGraph();
+  const tg = new O1TrGraph(o1js);
   for (const uint of ["uint", "uint16", "uint32", "uint64"]) {
     const minaUint64 = tg.transform<UInt64>(50000, [`${uint}-mina:uint64`]);
     a.is(minaUint64.toFields()[0]!.toBigInt(), 50000n);
@@ -49,7 +50,7 @@ test("uints to mina:uint64 & mina:uint64 to uints", () => {
 });
 
 test("mina:uint64 to mina:field(s)", () => {
-  const tg = new O1TrGraph();
+  const tg = new O1TrGraph(o1js);
   const fields = tg.transform<Field[]>(UInt64.from(1n), ["mina:uint64-mina:fields"]);
   a.is(fields[0]!.toBigInt(), 1n);
   const field = tg.transform<Field>(UInt64.from(2n), ["mina:uint64-mina:field"]);
@@ -57,14 +58,14 @@ test("mina:uint64 to mina:field(s)", () => {
 });
 
 test("mina:field to mina:uint64", () => {
-  const tg = new O1TrGraph();
+  const tg = new O1TrGraph(o1js);
   const transformed = tg.transform<UInt64>(new Field(2n), ["mina:field-mina:uint64"]);
   a.instance(transformed, UInt64);
   a.is(transformed.toBigInt(), 2n);
 });
 
 test("mina:fields to mina:uint64", () => {
-  const tg = new O1TrGraph();
+  const tg = new O1TrGraph(o1js);
   const transformed = tg.transform<UInt64>(UInt64.from(2n).toFields(), ["mina:fields-mina:uint64"]);
   a.equal(
     transformed,
@@ -73,7 +74,7 @@ test("mina:fields to mina:uint64", () => {
 });
 
 test("strings to mina:string", () => {
-  const tg = new O1TrGraph();
+  const tg = new O1TrGraph(o1js);
   const fromUtf8 = tg.transform<CircuitString>("😁", ["utf8-mina:string"]);
   a.instance(fromUtf8, CircuitString);
   a.equal(fromUtf8, CircuitString.fromString("😁"));
@@ -83,7 +84,7 @@ test("strings to mina:string", () => {
 });
 
 test("mina:string to string", () => {
-  const tg = new O1TrGraph();
+  const tg = new O1TrGraph(o1js);
   a.throws(() => tg.transform(CircuitString.fromString("字"), ["mina:string-utf8"]));
   a.is(
     tg.transform(CircuitString.fromString("hello world"), ["mina:string-ascii"]),
@@ -92,13 +93,13 @@ test("mina:string to string", () => {
 });
 
 test("mina:string to mina:fields", () => {
-  const tr = new O1TrGraph();
+  const tr = new O1TrGraph(o1js);
   const transformed = tr.transform(CircuitString.fromString("hello world"), ["mina:string-mina:fields"]);
   a.equal(transformed, CircuitString.fromString("hello world").toFields());
 });
 
 test("mina:fields to mina:string", () => {
-  const tg = new O1TrGraph();
+  const tg = new O1TrGraph(o1js);
   const transformed = tg.transform<CircuitString>(
     CircuitString.fromString("hello world").toFields(),
     ["mina:fields-mina:string"]
@@ -107,7 +108,7 @@ test("mina:fields to mina:string", () => {
 });
 
 test("mina:mod.order", () => {
-  const tr = new O1TrGraph();
+  const tr = new O1TrGraph(o1js);
   const value = 2n ** 256n - 1n;
   a.is(value, 115792089237316195423570985008687907853269984665640564039457584007913129639935n);
   const transformed = tr.transform(value, ["mina:mod.order"]);
@@ -115,7 +116,7 @@ test("mina:mod.order", () => {
 });
 
 test("boolean to mina:bool", () => {
-  const tr = new O1TrGraph();
+  const tr = new O1TrGraph(o1js);
   const trTrue = tr.transform<Bool>(true, ["boolean-mina:bool"]);
   a.instance(trTrue, Bool);
   a.is(trTrue.toBoolean(), true);
@@ -127,7 +128,7 @@ test("boolean to mina:bool", () => {
 });
 
 test("mina:bool to boolean", () => {
-  const tr = new O1TrGraph();
+  const tr = new O1TrGraph(o1js);
   a.is(
     tr.transform(Bool(true), ["mina:bool-boolean"]),
     true
@@ -139,7 +140,7 @@ test("mina:bool to boolean", () => {
 });
 
 test("mina:bool to mina:field", () => {
-  const tr = new O1TrGraph();
+  const tr = new O1TrGraph(o1js);
   a.equal(
     tr.transform(Bool(true), ["mina:bool-mina:field"]),
     new Field(1)
@@ -151,7 +152,7 @@ test("mina:bool to mina:field", () => {
 });
 
 test("mina:bool to mina:fields & mina:fields to mina:bool", () => {
-  const tg = new O1TrGraph();
+  const tg = new O1TrGraph(o1js);
   const fromTrue = tg.transform(Bool.fromJSON(true), ["mina:bool-mina:fields", "mina:fields-mina:bool"]);
   const fromFalse = tg.transform(Bool.fromJSON(false), ["mina:bool-mina:fields", "mina:fields-mina:bool"]);
   a.equal(fromTrue, Bool(true));
@@ -159,14 +160,14 @@ test("mina:bool to mina:fields & mina:fields to mina:bool", () => {
 });
 
 test("base58 to mina:publickey", () => {
-  const tr = new O1TrGraph();
+  const tr = new O1TrGraph(o1js);
   const publickeyBase58 = PrivateKey.random().toPublicKey().toBase58();
   const publickey = tr.transform(publickeyBase58, ["base58-mina:publickey"]);
   a.equal(publickey, PublicKey.fromBase58(publickeyBase58));
 });
 
 test("mina:publickey to base58", () => {
-  const tr = new O1TrGraph();
+  const tr = new O1TrGraph(o1js);
   const publickey = PrivateKey.random().toPublicKey();
   a.is(
     tr.transform(publickey, ["mina:publickey-base58"]),
@@ -175,14 +176,14 @@ test("mina:publickey to base58", () => {
 });
 
 test("mina:publickey to mina:fields", () => {
-  const tr = new O1TrGraph();
+  const tr = new O1TrGraph(o1js);
   const publickey = PrivateKey.random().toPublicKey();
   const fields = tr.transform<Field[]>(publickey, ["mina:publickey-mina:fields"]);
   fields.forEach((field) => a.instance(field, Field));
 });
 
 test("mina:fields to mina:publickey", () => {
-  const tg = new O1TrGraph();
+  const tg = new O1TrGraph(o1js);
   const publickey = PrivateKey.random().toPublicKey();
   a.equal(
     tg.transform(publickey.toFields(), ["mina:fields-mina:publickey"]),
@@ -191,7 +192,7 @@ test("mina:fields to mina:publickey", () => {
 });
 
 test("base58 to mina:privatekey", () => {
-  const tg = new O1TrGraph();
+  const tg = new O1TrGraph(o1js);
   const privatekey = PrivateKey.random();
   a.equal(
     tg.transform(privatekey.toBase58(), ["base58-mina:privatekey"]),
@@ -200,7 +201,7 @@ test("base58 to mina:privatekey", () => {
 });
 
 test("mina:privatekey to base58", () => {
-  const tg = new O1TrGraph();
+  const tg = new O1TrGraph(o1js);
   const privatekey = PrivateKey.random();
   a.is(
     tg.transform(privatekey, ["mina:privatekey-base58"]),
@@ -209,7 +210,7 @@ test("mina:privatekey to base58", () => {
 });
 
 test("mina:privatekey to mina:fields", () => {
-  const tg = new O1TrGraph();
+  const tg = new O1TrGraph(o1js);
   const privatekey = PrivateKey.random();
   const transformed = tg.transform(privatekey, ["mina:privatekey-mina:fields"]);
   a.equal(
@@ -219,7 +220,7 @@ test("mina:privatekey to mina:fields", () => {
 });
 
 test("mina:fields to mina:privatekey", () => {
-  const tg = new O1TrGraph();
+  const tg = new O1TrGraph(o1js);
   const privatekey = PrivateKey.random();
   const transformed = tg.transform(privatekey.toFields(), ["mina:fields-mina:privatekey"]);
   a.equal(
@@ -229,7 +230,7 @@ test("mina:fields to mina:privatekey", () => {
 });
 
 test("base58 to mina:signature", () => {
-  const tg = new O1TrGraph();
+  const tg = new O1TrGraph(o1js);
   const privatekey = PrivateKey.random();
   const signatureBase58 = Signature.create(privatekey, [Field(1)]).toBase58();
   const signature = tg.transform(signatureBase58, ["base58-mina:signature"]);
@@ -240,7 +241,7 @@ test("base58 to mina:signature", () => {
 });
 
 test("mina:signature to base58", () => {
-  const tg = new O1TrGraph();
+  const tg = new O1TrGraph(o1js);
   const privatekey = PrivateKey.random();
   const signature = Signature.create(privatekey, [Field(1)]);
   const signatureBase58 = tg.transform(signature, ["mina:signature-base58"]);
@@ -248,7 +249,7 @@ test("mina:signature to base58", () => {
 });
 
 test("mina:signature to mina:fields", () => {
-  const tg = new O1TrGraph();
+  const tg = new O1TrGraph(o1js);
   const privatekey = PrivateKey.random();
   const signature = Signature.create(privatekey, [Field(1)]);
   const transformed = tg.transform<Field[]>(signature, ["mina:signature-mina:fields"]);
@@ -256,7 +257,7 @@ test("mina:signature to mina:fields", () => {
 });
 
 test("mina:fields to mina:signature", () => {
-  const tg = new O1TrGraph();
+  const tg = new O1TrGraph(o1js);
   const privatekey = PrivateKey.random();
   const signature = Signature.create(privatekey, [Field(1)]);
   a.equal(
@@ -266,25 +267,25 @@ test("mina:fields to mina:signature", () => {
 });
 
 test("mina:field", () => {
-  const tg = new O1TrGraph();
+  const tg = new O1TrGraph(o1js);
   const field = tg.transform(Field(1n), ["mina:field"]);
   a.equal(field, Field(1n));
 });
 
 test("mina:fields", () => {
-  const tg = new O1TrGraph();
+  const tg = new O1TrGraph(o1js);
   const fields = tg.transform([Field(1n), Field(2n)], ["mina:fields"]);
   a.equal(fields, [Field(1n), Field(2n)]);
 });
 
 test("mina:bool", () => {
-  const tg = new O1TrGraph();
+  const tg = new O1TrGraph(o1js);
   const bool = tg.transform(Bool(true), ["mina:bool"]);
   a.equal(bool, Bool(true));
 });
 
 test("mina:publickey", () => {
-  const tg = new O1TrGraph();
+  const tg = new O1TrGraph(o1js);
   const publickey = PrivateKey.random().toPublicKey();
   a.equal(
     tg.transform(publickey, ["mina:publickey"]),
@@ -293,7 +294,7 @@ test("mina:publickey", () => {
 });
 
 test("mina:privatekey", () => {
-  const tg = new O1TrGraph();
+  const tg = new O1TrGraph(o1js);
   const privatekey = PrivateKey.random();
   a.equal(
     tg.transform(privatekey, ["mina:privatekey"]),
@@ -302,7 +303,7 @@ test("mina:privatekey", () => {
 });
 
 test("mina:signature", () => {
-  const tg = new O1TrGraph();
+  const tg = new O1TrGraph(o1js);
   const privatekey = PrivateKey.random();
   const signature = Signature.create(privatekey, [Field(1n)]);
   a.equal(
@@ -312,7 +313,7 @@ test("mina:signature", () => {
 });
 
 test("mina:string", () => {
-  const tg = new O1TrGraph();
+  const tg = new O1TrGraph(o1js);
   a.equal(
     tg.transform(CircuitString.fromString("hello world"), ["mina:string"]),
     CircuitString.fromString("hello world")
@@ -320,7 +321,7 @@ test("mina:string", () => {
 });
 
 test("mina:uint64", () => {
-  const tg = new O1TrGraph();
+  const tg = new O1TrGraph(o1js);
   a.equal(
     tg.transform(UInt64.from(2n), ["mina:uint64"]),
     UInt64.from(2n)
@@ -328,7 +329,7 @@ test("mina:uint64", () => {
 });
 
 test("extend graph", () => {
-  const tg = new O1TrGraph();
+  const tg = new O1TrGraph(o1js);
   tg.extend([{
     name: "hello",
     isType: (_) => true

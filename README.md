@@ -3,7 +3,10 @@
 ## Usage
 
 ```typescript
-const trGraph = new O1TrGraph();
+import {O1TrGraph} from "o1js-trgraph";
+import * as o1js from "o1js";
+
+const trGraph = new O1TrGraph(o1js);
 const result = trGraph.objectTransform({
   name: "Test",
   age: 18
