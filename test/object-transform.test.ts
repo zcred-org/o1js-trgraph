@@ -4,11 +4,12 @@ import { CircuitString, Field, PrivateKey, Signature } from "o1js";
 import { O1TrGraph } from "../src/graph.js";
 import { TrSchema } from "trgraph";
 import { O1GraphLink } from "../src/index.js";
+import * as o1js from "o1js";
 
 const test = suite("O1TrGraph object transform tests");
 
 test("object transform", () => {
-  const tg = new O1TrGraph();
+  const tg = new O1TrGraph(o1js);
   const privatekey = PrivateKey.random();
   const signature = Signature.create(privatekey, [Field(1n)]);
   const schema: TrSchema<O1GraphLink> = {
