@@ -1,12 +1,6 @@
 import { TrGraph, type TrLink, type TrNode } from "trgraph";
 
-// type o1js = typeof import("o1js"); // TODO uncomment for developing
-
-
-export function createExtensions(
-  // o1js: o1js // TODO uncomment for developing
-  o1js: any
-) {
+export function createExtensions(o1js: typeof import("o1js")) {
   type Field = ReturnType<typeof o1js.Field>;
   type UInt64 = ReturnType<typeof o1js.UInt64["from"]>;
   type CircuitString = ReturnType<typeof o1js.CircuitString["fromString"]>;
@@ -321,7 +315,7 @@ export function createExtensions(
 
 
 export class O1TrGraph extends TrGraph {
-  constructor(o1js: any) {
+  constructor(o1js: typeof import("o1js")) {
     super();
     const { o1jsNodes, o1jsLinks } = createExtensions(o1js);
     super.extend(o1jsNodes, o1jsLinks);
