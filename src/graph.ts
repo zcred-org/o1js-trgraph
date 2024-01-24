@@ -1,8 +1,15 @@
 import { TrGraph, type TrLink, type TrNode } from "trgraph";
 
-import type * as O1JSModule from "o1js";
 
-export function createExtensions(o1js: typeof O1JSModule) {
+export function createExtensions(o1js: typeof import("o1js")) {
+  type Field = ReturnType<typeof o1js.Field>;
+  type UInt64 = ReturnType<typeof o1js.UInt64["from"]>;
+  type CircuitString = ReturnType<typeof o1js.CircuitString["fromString"]>;
+  type Signature = ReturnType<typeof o1js.Signature["fromBase58"]>;
+  type PublicKey = ReturnType<typeof o1js.PublicKey["fromBase58"]>;
+  type PrivateKey = ReturnType<typeof o1js.PrivateKey["fromBase58"]>;
+  type Bool = ReturnType<typeof o1js.Bool>;
+
   const o1jsNodes: TrNode[] = [
     {
       name: "mina:field",
@@ -84,7 +91,7 @@ export function createExtensions(o1js: typeof O1JSModule) {
         name: `mina:field-${uint}`,
         inputType: "mina:field",
         outputType: uint,
-        transform: (value: O1JSModule.Field) => value.toBigInt()
+        transform: (value: Field) => value.toBigInt()
       });
     }
     return result;
@@ -110,7 +117,7 @@ export function createExtensions(o1js: typeof O1JSModule) {
         name: `mina:uint64-${uint}`,
         inputType: "mina:uint64",
         outputType: uint,
-        transform: (value: O1JSModule.UInt64) => value.toBigInt()
+        transform: (value: UInt64) => value.toBigInt()
       });
     }
     return result;
@@ -136,7 +143,7 @@ export function createExtensions(o1js: typeof O1JSModule) {
         name: `mina:string-${str}`,
         inputType: "mina:string",
         outputType: str,
-        transform: (value: O1JSModule.CircuitString) => value.toString()
+        transform: (value: CircuitString) => value.toString()
       });
     }
     return result;
@@ -155,25 +162,25 @@ export function createExtensions(o1js: typeof O1JSModule) {
       name: "mina:uint64-mina:fields",
       inputType: "mina:uint64",
       outputType: "mina:fields",
-      transform: (value: O1JSModule.UInt64) => value.toFields()
+      transform: (value: UInt64) => value.toFields()
     },
     {
       name: "mina:fields-mina:uint64",
       inputType: "mina:fields",
       outputType: "mina:uint64",
-      transform: (value: O1JSModule.Field[]) => o1js.UInt64.fromFields(value)
+      transform: (value: Field[]) => o1js.UInt64.fromFields(value)
     },
     {
       name: "mina:uint64-mina:field",
       inputType: "mina:uint64",
       outputType: "mina:field",
-      transform: (value: O1JSModule.UInt64) => value.toFields()[0]!
+      transform: (value: UInt64) => value.toFields()[0]!
     },
     {
       name: "mina:field-mina:uint64",
       inputType: "mina:field",
       outputType: "mina:uint64",
-      transform: (value: O1JSModule.Field) => o1js.UInt64.from(value)
+      transform: (value: Field) => o1js.UInt64.from(value)
     },
     {
       name: "base58-mina:signature",
@@ -185,19 +192,19 @@ export function createExtensions(o1js: typeof O1JSModule) {
       name: "mina:signature-base58",
       inputType: "mina:signature",
       outputType: "base58",
-      transform: (value: O1JSModule.Signature) => value.toBase58()
+      transform: (value: Signature) => value.toBase58()
     },
     {
       name: "mina:signature-mina:fields",
       inputType: "mina:signature",
       outputType: "mina:fields",
-      transform: (value: O1JSModule.Signature) => value.toFields()
+      transform: (value: Signature) => value.toFields()
     },
     {
       name: "mina:fields-mina:signature",
       inputType: "mina:fields",
       outputType: "mina:signature",
-      transform: (value: O1JSModule.Field[]) => o1js.Signature.fromFields(value)
+      transform: (value: Field[]) => o1js.Signature.fromFields(value)
     },
     {
       name: "base58-mina:publickey",
@@ -209,19 +216,19 @@ export function createExtensions(o1js: typeof O1JSModule) {
       name: "mina:publickey-base58",
       inputType: "mina:publickey",
       outputType: "base58",
-      transform: (value: O1JSModule.PublicKey) => value.toBase58()
+      transform: (value: PublicKey) => value.toBase58()
     },
     {
       name: "mina:publickey-mina:fields",
       inputType: "mina:publickey",
       outputType: "mina:fields",
-      transform: (value: O1JSModule.PublicKey) => value.toFields()
+      transform: (value: PublicKey) => value.toFields()
     },
     {
       name: "mina:fields-mina:publickey",
       inputType: "mina:fields",
       outputType: "mina:publickey",
-      transform: (value: O1JSModule.Field[]) => o1js.PublicKey.fromFields(value)
+      transform: (value: Field[]) => o1js.PublicKey.fromFields(value)
     },
     {
       name: "base58-mina:privatekey",
@@ -233,19 +240,19 @@ export function createExtensions(o1js: typeof O1JSModule) {
       name: "mina:privatekey-base58",
       inputType: "mina:privatekey",
       outputType: "base58",
-      transform: (value: O1JSModule.PrivateKey) => value.toBase58()
+      transform: (value: PrivateKey) => value.toBase58()
     },
     {
       name: "mina:privatekey-mina:fields",
       inputType: "mina:privatekey",
       outputType: "mina:fields",
-      transform: (value: O1JSModule.PrivateKey) => value.toFields()
+      transform: (value: PrivateKey) => value.toFields()
     },
     {
       name: "mina:fields-mina:privatekey",
       inputType: "mina:fields",
       outputType: "mina:privatekey",
-      transform: (value: O1JSModule.Field[]) => o1js.PrivateKey.fromFields(value)
+      transform: (value: Field[]) => o1js.PrivateKey.fromFields(value)
     },
     {
       name: "boolean-mina:bool",
@@ -257,25 +264,25 @@ export function createExtensions(o1js: typeof O1JSModule) {
       name: "mina:bool-mina:field",
       inputType: "mina:bool",
       outputType: "mina:field",
-      transform: (value: O1JSModule.Bool) => value.toField()
+      transform: (value: Bool) => value.toField()
     },
     {
       name: "mina:bool-mina:fields",
       inputType: "mina:bool",
       outputType: "mina:fields",
-      transform: (value: O1JSModule.Bool) => value.toFields()
+      transform: (value: Bool) => value.toFields()
     },
     {
       name: "mina:fields-mina:bool",
       inputType: "mina:fields",
       outputType: "mina:bool",
-      transform: (value: O1JSModule.Field[]) => o1js.Bool.fromFields(value)
+      transform: (value: Field[]) => o1js.Bool.fromFields(value)
     },
     {
       name: "mina:bool-boolean",
       inputType: "mina:bool",
       outputType: "boolean",
-      transform: (value: O1JSModule.Bool) => value.toBoolean()
+      transform: (value: Bool) => value.toBoolean()
     },
     {
       name: "mina:mod.order",
@@ -290,7 +297,7 @@ export function createExtensions(o1js: typeof O1JSModule) {
       name: "mina:string-mina:fields",
       inputType: "mina:string",
       outputType: "mina:fields",
-      transform: (value: O1JSModule.CircuitString) => value.toFields()
+      transform: (value: CircuitString) => value.toFields()
     },
     {
       name: "mina:fields-mina:string",
@@ -309,7 +316,7 @@ export function createExtensions(o1js: typeof O1JSModule) {
 
 
 export class O1TrGraph extends TrGraph {
-  constructor(o1js: typeof O1JSModule) {
+  constructor(o1js: typeof import("o1js")) {
     super();
     const { o1jsNodes, o1jsLinks } = createExtensions(o1js);
     super.extend(o1jsNodes, o1jsLinks);
